@@ -16,11 +16,13 @@ import com.project.project.services.UserTokenService;
 
 @RestController
 @RequestMapping("/students")
+
 public class StudentController {
+    @Autowired
     private UserService  userService ;
     private UserTokenService userTokenService ;
 
-    @Autowired
+    
     public StudentController(UserService userService , UserTokenService userTokenService)
     {
         this.userService = userService ;
@@ -30,7 +32,9 @@ public class StudentController {
     @GetMapping("/allStudents")
     public ResponseEntity index(@RequestHeader("Authorization") String token)
     {
-        boolean isValidToken = userTokenService.isValidToken(token);
+        
+        boolean isValidToken = userTokenService.isValidToken(userTokenService.extractToken(token));
+        System.out.println(isValidToken);
         if (isValidToken) {
             Map<String, Object> result = new HashMap<>();
             result.put("students", userService.getAllUser());

@@ -4,11 +4,10 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
-
 import com.project.project.dto.UserDto;
 import com.project.project.models.PersonalAccesToken;
 import com.project.project.models.User;
+import com.project.project.repositories.FilierRepo;
 import com.project.project.repositories.PersonalAccessTokenRepository;
 import com.project.project.repositories.UserRepo;
 import com.project.project.requests.StoreUserLoginRequest;
@@ -24,11 +23,13 @@ import java.util.Optional;
 public class AuthService {
    
     private final UserRepo userRepository ;
+    private final FilierRepo filierRepo;
     private final PersonalAccessTokenRepository personalAccesTokenRepository;
     private  UserTokenService userTokenService;
     @Autowired
-    public AuthService(UserRepo userRepository, UserTokenService userTokenService,PersonalAccessTokenRepository personalAccesTokenRepository) {
+    public AuthService(FilierRepo filierRepo ,UserRepo userRepository, UserTokenService userTokenService,PersonalAccessTokenRepository personalAccesTokenRepository) {
         this.userRepository = userRepository;
+        this.filierRepo = filierRepo ;
         this.userTokenService = userTokenService;
         this.personalAccesTokenRepository = personalAccesTokenRepository;
         
@@ -47,13 +48,14 @@ public class AuthService {
 
     
     public Map<String, Object> register(StoreUserRequest request){
-        Optional<User> oldUser = userRepository.findByCne(request.getCne());
+        Optional<User> oldUser = userRepository.findByCne(request.getCne().toUpperCase());
         Map<String, Object> responseMap = new HashMap<>();
         if (oldUser.isPresent()) {
             responseMap.put("error", "The CNE already exists");
             return responseMap;
         }
-        User user   = userRepository.save(User.toUser(request));
+        User user   = userRepository.save(User.toUser(request , filierRepo));
+        
         responseMap.put("user",UserDto.toUserDto(user));
         responseMap.put("token",storeToken(user));
 
@@ -65,7 +67,7 @@ public class AuthService {
     public Map<String, Object> loginUser(@Valid StoreUserLoginRequest request) {
         Map<String, Object> responseMap = new HashMap<>();
 
-        userRepository.findByCneAndPassword(request.getCne(), User.hashPassword(request.getPassword()))
+        userRepository.findByCneAndPassword(request.getCne().toUpperCase(), User.hashPassword(request.getPassword()))
                 .ifPresentOrElse(
                         user -> {
                             responseMap.put("user", UserDto.toUserDto(user));
@@ -88,6 +90,35 @@ public class AuthService {
            }
      
            return false ;
+    }
+
+    public Map<String, Object> checkCneUser(String cne) {
+        Map<String, Object> responseMap = new HashMap<>();
+
+        userRepository.findByCne(cne.toUpperCase())
+                .ifPresentOrElse(
+                        user -> {
+                            responseMap.put("success", false);
+                        },
+                        () -> responseMap.put("success", true)
+                );
+
+        return responseMap;
+    }
+
+    public Map<String, Object> checkUser(String token) {
+        Map<String, Object> responseMap = new HashMap<>();
+        
+        Optional<User> userOptional = userRepository.findUserByToken(token);
+        
+        userOptional.ifPresentOrElse(
+            user -> {
+                responseMap.put("user", UserDto.toUserDto(user));
+            },
+            () -> responseMap.put("error", "Data mismatch")
+        );
+
+        return responseMap;
     }
     
 }

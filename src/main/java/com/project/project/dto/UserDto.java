@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import com.project.project.models.Filier;
 import com.project.project.models.User;
+import com.project.project.repositories.FilierRepo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +20,9 @@ public class UserDto {
     private String tele ;
     private Timestamp createdAt;
     private String role;
-    private String filiere;
+    private FilierDto filiere;
     private boolean isAdmin;
+    private boolean status;
 
     static public UserDto toUserDto(User user){
         UserDto userDto = new UserDto();
@@ -29,8 +31,9 @@ public class UserDto {
         userDto.setCne(user.getCne());
         userDto.setTele(user.getTele());
         userDto.setRole(user.getRole());
-        userDto.setFiliere(user.getNameFilier());
+        userDto.setFiliere(FilierDto.toFilierDto(user.getFiliere()));
         userDto.setAdmin(user.isAdmin());
+        userDto.setStatus(user.isStatus());
         userDto.setCreatedAt(user.getCreatedAt());
         return userDto;
     }

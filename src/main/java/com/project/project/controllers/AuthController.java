@@ -5,6 +5,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -53,6 +55,25 @@ public class AuthController {
 
     }
 
+    @GetMapping("/user")
+    public ResponseEntity user(@RequestHeader("Authorization") String token)
+    {
+        Map<String, Object> result = authService.checkUser(userTokenService.extractToken(token));
+        HttpStatus status = result.containsKey("user") ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(result, status);
+
+    }
+
+
+
+    @GetMapping("/checkcne/{cne}")
+    public ResponseEntity checkCne(@PathVariable String cne)
+    {
+        Map<String, Object> result = authService.checkCneUser(cne);
+        return new ResponseEntity<>(result, HttpStatus.OK );
+
+    }
+
 
     @PostMapping("/logout")
     public ResponseEntity logout(@RequestHeader("Authorization") String token) 
@@ -67,5 +88,8 @@ public class AuthController {
         result.put("error", "invalid token");
         return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
     }
+
+
+    
     
 }

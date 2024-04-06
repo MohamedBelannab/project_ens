@@ -2,10 +2,12 @@ package com.project.project.models;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.project.project.repositories.FilierRepo;
 import com.project.project.requests.StoreUserRequest;
 
 import jakarta.persistence.Column;
@@ -25,15 +27,18 @@ import lombok.Data;
 public class User {
     public User() { 
         this.role = "student";
+        this.status = false ;
+
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id  ;
     private String cne ;
-    private String Prenom ;
+    private String prenom ;
     private String tele ;
     private String password;
     private String role;
+    private boolean status;
   
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -72,22 +77,26 @@ public class User {
         return role.equals("admin");
     }
 
+    public boolean isStatus(){
+        return status  ;
+    }
 
-    public static User toUser(StoreUserRequest request) {
+
+    public static User toUser(StoreUserRequest request , FilierRepo filierRepo) {
         User user = new User();
         user.setPrenom(request.getPrenom());;
-        user.setCne(request.getCne());
+        user.setCne(request.getCne().toUpperCase());
         user.setPassword(User.hashPassword(request.getPassword()) );
         user.setTele(request.getTele());
-        Filier filiere = new Filier();
-        filiere.setId(Long.parseLong(request.getFiliere_id()));
-        user.setFiliere(filiere);
+        // Find and set the Filiere
+        Optional<Filier> filierOptional = filierRepo.findFirstById(Long.parseLong(request.getFiliere_id()));
+        filierOptional.ifPresent(user::setFiliere);
         return user;
     }
 
 
     public String getNameFilier() {
-        return filiere != null ? filiere.getNomFilier() : null;
+        return this.getFiliere().getNomFilier() ;
     }
     
 }

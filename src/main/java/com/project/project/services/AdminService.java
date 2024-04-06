@@ -53,7 +53,7 @@ public class AdminService {
             return responseMap;
         }
     
-        User student = userRepo.save(User.toUser(request));
+        User student = userRepo.save(User.toUser(request , filierRepo));
         responseMap.put("success", "Student created!");
         return responseMap;
     }
