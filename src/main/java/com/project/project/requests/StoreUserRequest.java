@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class StoreUserRequest {
+public class StoreUserRequest  {
     @NotBlank(message = "cne is required")
     private String cne ;
     @NotBlank(message = "prenom is required")
@@ -20,6 +20,7 @@ public class StoreUserRequest {
     private String password_confirme ;
     @NotBlank(message = "filier is required")
     private String filiere_id ;
+    private boolean status ;
    
 
     public  boolean passwordCheck(){

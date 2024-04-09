@@ -43,7 +43,7 @@ public class Filier {
     {
 
         Filier filier = new Filier() ;
-        filier.setNomFilier(request.getNom_filier());
+        filier.setNomFilier(request.getNom_filier().toLowerCase());
         Departement departement = new Departement() ;
         departement.setId(Long.parseLong(request.getDepartment_id()));
         filier.setDepartment(departement);

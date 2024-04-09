@@ -1,7 +1,5 @@
 package com.project.project.controllers;
 
-import java.net.http.HttpRequest;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,36 +74,35 @@ public class AdminController {
 
     }
 
-    @PutMapping("/update/{name}/{id}")
-public ResponseEntity<?> update(
-        @RequestHeader("Authorization") String token,
-        @PathVariable String name,
-        @PathVariable long id,
-        @Valid @RequestBody Object request
-) 
-{
-        String lowercaseName = name.toLowerCase();
-        Map<String, Object> responseMap = new HashMap<>();
+    @PutMapping("/updateStudent/{id}")
+    public ResponseEntity update(
+            @RequestHeader("Authorization") String token,
+            @PathVariable long id,
+            @Valid @RequestBody StoreUserRequest request
+    ) 
+    {
+            Map<String, Object> responseMap = new HashMap<>();
 
-        switch (lowercaseName) {
-            case "student":
-                responseMap = adminService.updateStudent(token, id, (StoreUserRequest) request);
-                break;
-            case "departement":
-                responseMap = adminService.updateDepartement(token, id, (StoreDepartementRequest) request);
-                break;
-            case "filier":
-                responseMap = adminService.updateFilier(token, id, (StoreFilierRequest) request);
-                break;
-            default:
-                return new ResponseEntity<>("Invalid entity name!", HttpStatus.BAD_REQUEST);
-        }
+            responseMap = adminService.updateStudent(userTokenService.extractToken(token), id,  request);
+            HttpStatus status = responseMap.containsKey("success") ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(responseMap, status);
+    }
 
-        HttpStatus status = responseMap.containsKey("success") ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-        return new ResponseEntity<>(responseMap, status);
-}
+
+    @PutMapping("/updateFiliere/{id}")
+    public ResponseEntity updateFiliere(
+            @RequestHeader("Authorization") String token,
+            @PathVariable long id,
+            @Valid @RequestBody StoreFilierRequest request
+    ) 
+    {
+            Map<String, Object> responseMap = new HashMap<>();
+
+            responseMap = adminService.updateFilier(userTokenService.extractToken(token), id,  request);
+            HttpStatus status = responseMap.containsKey("success") ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(responseMap, status);
+    }
     
-
 
     
 }

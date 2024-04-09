@@ -68,7 +68,7 @@ public class AdminService {
             return responseMap;
         }
     
-        Optional<Filier> oldFilier = filierRepo.findByNomFilier(request.getNom_filier());
+        Optional<Filier> oldFilier = filierRepo.findByNomFilier(request.getNom_filier().toLowerCase());
         if (oldFilier.isPresent()) {
             responseMap.put("error", "The Filier already exists");
             return responseMap;
@@ -161,11 +161,16 @@ public class AdminService {
             updateUser.setCne(storeUserRequest.getCne());
             updateUser.setPrenom(storeUserRequest.getPrenom());
             updateUser.setTele(storeUserRequest.getTele());
+            updateUser.setStatus(storeUserRequest.isStatus());
     
             if (storeUserRequest.getFiliere_id() != null) {
                 Long filiereId = Long.parseLong(storeUserRequest.getFiliere_id());
                 Filier filiere = filierRepo.findById(filiereId).orElse(null);
                 updateUser.setFiliere(filiere);
+            }
+
+            if (!storeUserRequest.getPassword().equals("********")) {
+                updateUser.setPassword(User.hashPassword(storeUserRequest.getPassword()));  
             }
     
             userRepo.save(updateUser);

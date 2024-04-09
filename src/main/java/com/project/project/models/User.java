@@ -88,6 +88,8 @@ public class User {
         user.setCne(request.getCne().toUpperCase());
         user.setPassword(User.hashPassword(request.getPassword()) );
         user.setTele(request.getTele());
+        System.err.println(request.isStatus());
+        user.setStatus(request.isStatus());
         // Find and set the Filiere
         Optional<Filier> filierOptional = filierRepo.findFirstById(Long.parseLong(request.getFiliere_id()));
         filierOptional.ifPresent(user::setFiliere);
