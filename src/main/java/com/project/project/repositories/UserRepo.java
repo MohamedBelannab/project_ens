@@ -3,6 +3,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.project.project.models.Filier;
 import com.project.project.models.User;
 
 import java.util.List;
@@ -24,6 +26,10 @@ public interface UserRepo extends JpaRepository<User , Long>{
     Optional<User> findFirstById(long id);
 
     List<User> findAllByRole(String role);
+
+    List<User> findByFiliere(Filier filiere);
+    // List<User> findByFilier(Filier filier);
+
 
     
 

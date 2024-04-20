@@ -17,7 +17,7 @@ import com.project.project.repositories.UserRepo;
 import com.project.project.requests.StoreDepartementRequest;
 import com.project.project.requests.StoreFilierRequest;
 import com.project.project.requests.StoreUserRequest;
-
+import java.util.List;
 import jakarta.validation.Valid;
 
 @Service
@@ -128,7 +128,7 @@ public class AdminService {
                 }
                 break;
             
-            case "departement":
+                case "departement":
                 Optional<Departement> oldDepartement = departementRepo.findFirstById(id);
                 if (oldDepartement.isPresent()) {
                     departementRepo.delete(oldDepartement.get());
@@ -155,9 +155,9 @@ public class AdminService {
             return responseMap;
         }
     
-        Optional<User> optionalUser = userRepo.findById(id);
-        if (optionalUser.isPresent()) {
-            User updateUser = optionalUser.get();
+        Optional<User> optionalFilier = userRepo.findById(id);
+        if (optionalFilier.isPresent()) {
+            User updateUser = optionalFilier.get();
             updateUser.setCne(storeUserRequest.getCne());
             updateUser.setPrenom(storeUserRequest.getPrenom());
             updateUser.setTele(storeUserRequest.getTele());
@@ -201,6 +201,22 @@ public class AdminService {
         if (user == null || !user.isAdmin()) {
             responseMap.put("error", "You have no permission to do this action!");
             return responseMap;
+        }
+        Optional<Filier> optionalFilier = filierRepo.findById(id);
+        if (optionalFilier.isPresent()) {
+            Filier updateFilier = optionalFilier.get();
+            updateFilier.setNomFilier(storeFilierRequest.getNom_filier());
+    
+            if (storeFilierRequest.getDepartment_id() != null) {
+                Long depa_id = Long.parseLong(storeFilierRequest.getDepartment_id());
+                Departement departement = departementRepo.findById(depa_id).orElse(null);
+                updateFilier.setDepartment(departement);
+            }
+    
+            filierRepo.save(updateFilier);
+            responseMap.put("success", "foramation Updated!");
+        } else {
+            responseMap.put("error", "formation not found!");
         }
         return responseMap ;
     }

@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.project.repositories.FilierRepo;
 import com.project.project.requests.StoreUserRequest;
 
@@ -41,7 +42,8 @@ public class User {
     private boolean status;
   
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+     @JsonManagedReference
     private Filier filiere;
 
     @CreationTimestamp

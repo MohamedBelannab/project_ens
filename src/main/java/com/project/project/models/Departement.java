@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.project.project.requests.StoreDepartementRequest;
 
 import jakarta.persistence.CascadeType;
@@ -37,7 +38,8 @@ public class Departement {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
+    @OneToMany( mappedBy = "department" ,cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private List<Filier> filieres;
 
 

@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.project.project.models.Departement;
 import com.project.project.models.Filier;
 import java.util.List;
 
@@ -15,5 +16,8 @@ public interface FilierRepo extends  JpaRepository<Filier , Long> {
 
 
     Optional<Filier> findByNomFilier(String nomFilier);
+
+
+    List<Filier> findByDepartment(Departement department);
     
 }
